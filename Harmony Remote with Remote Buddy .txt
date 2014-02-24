@@ -1,0 +1,27 @@
+3. Now that you have you AS written, you need to map those to functions in RB. You need these to be Global actions so they are accessible across all behaviors.
+4. In RB, pick your behavior from Part 3 and click on any blank mapping. Find Custom Actions and click on it.
+5. Create a new Custom Action by clicking the + sign on the bottom left.
+6. Name it whatever you like, I used naming convention “Plex Activate”, “EyeTV Activate”, etc.
+7. Click the “Action available globally and for context menu” check box. This makes the action global for all behaviors.
+8. Click the + on the right under “Actors to run within Action” and add an AS actor.
+9. Paste in the corresponding AS code from above.
+10. Click Compile.
+11. Assuming no compile errors, change the Options to be “Execute on button press”.
+12. Click Close.
+13. On the Mapping tab, select Global mapping on the left and assign the newly created actions to whatever button press you want. Again, follow the steps from part 3 to as you have to cross reference all the mappings.
+a. Note: I am using soft keys for this, but you can use hard keys also if you prefer. If using soft keys, you’ll most likely need to go back into the Harmony software and change the name of soft key to something useful that describes what it’s doing.
+14. Once done, press the button on the remote and it should fire the AS and switch applications for you. RB automatically recognizes what application is active so at this point, you can map all the Harmony buttons to what you want for the new application, again using the steps from Part 3.
+15. Create additional “switchers” as needed and add apps as desired. 
+16. At this point, you should have everything functioning with just one sticky point left.
+Part 5: Adding Power On and Power Off procedures.
+1. All that’s left at this point is telling RB what you want it to do when you “power on” the activity (I.E. press “Watch TV” or whatever you named your activity from Part 1) and what happens when you press the power button to shut everything off.
+2. What I did was create PowerOn and PowerOff AppleScripts to fire.
+3. Start by telling the Harmony software to send an extra command at Activity Start and Power Off. Go into the Harmony software, and select “Settings” under your activity.
+4. Click “Review the settings for this activity”.
+5. Click “Yes, but I want to add more control of options and devices for this Activity.”
+6. Keep clicking all the way until you get screen that says “When you enter this activity, these devices are turned on and the following actions occur:”.
+7. Click “Add action for Plex”.
+8. Click the “Send this infrared command” and then select an unused Plex function from the list.
+9. Click Next.
+10. Repeat for the power off action.
+11. Now when you power on your activity, or when you power off the Harmony will send an extra IR command that you can map in RB to run an AS to do whatever you like. Write your AS how you like, and repeat Part 4 to make these global, and map them as you did in Part 3. Below are the PowerOn and PowerOff scripts I’m using. The PowerOn script is identical to the “Switch to EyeTV” script above, but I wanted to map them to separate functions so in the event I ever want to change either script to add more control, I have the option without having to go back into the Harmony software.

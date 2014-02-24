@@ -1,0 +1,25 @@
+Taken from http://www.silicondust.com/forum2/viewtopic.php?t=4474
+
+Signal Strength and Quality
+
+There are three percentages reported by the HDHomeRun - 
+
+Signal Strength (ss) 
+- raw power level as measured by the receiver 
+
+Signal Quality (snq) 
+- how clearly defined the digital data is 
+
+Symbol Quality (seq) 
+- Amount of correct or corrected data over the last second 
+
+The above definitions can be confusing, so a much simpler definition is to imagine listening to the radio: 
+- Signal Strength represents the volume 
+- Signal Quality represents how clearly you can hear the lyrics 
+- Symbol Quality indicates the percentage of the lyrics you could hear or guess correctly 
+
+As it turns out, Signal Strength is somewhat irrelevant; if your antenna isn't pointed properly, it doesn't matter how loud you turn up the volume, the static will prevent you from hearing the lyrics correctly. Similarly, amplifying a weak HDTV signal can result in a high signal strength but too much noise to decode the digital data correctly. 
+
+Use the Signal Strength for a rough idea of direction, but align the antenna for the highest Signal Quality, ignoring Signal Strength. When aimed correctly, Symbol Quality will show 100%, indicating no errors in the output. Splitters and amplifiers can introduce noise which will lower the Signal Quality, even if the Signal Strength increases.
+
+
