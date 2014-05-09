@@ -3,22 +3,26 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2013.11.29.r1
+# v2014.05.09.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
 # Use the -csv option to print out CSV formatted results
+# Use the -datalog option to append the results to the DATALOG file defined below
+# Use the -noscan option to select a HDHR Unit and Tuner but not perform a scan
 #
 # A note about deciphering the results here:
 # http://www.silicondust.com/forum2/viewtopic.php?t=4474
 #
-# Follow me on Twitter https://twitter.com/shmick
+# Twitter:// @shmick
 #
 ######################################################################################
 
 # Set the path to the hdhomerun_config utility here
-#
 HDHRConfig=/usr/bin/hdhomerun_config
+
+# Set the filename to log to when using the -datalog function
+DATALOG=""
 
 if [ ! -x $HDHRConfig ]
 then
@@ -26,6 +30,15 @@ echo ""
 echo "Unable to locate the hdhomerun_config utility, please edit the HDHRConfig variable in this script"
 echo ""
 exit
+fi
+
+if [ "$1" = "-datalog" ]
+then
+	if [ "$DATALOG" = "" ]
+	then
+	echo "You must define the DATALOG variable in this script for this function to work"
+	exit
+	fi
 fi
 
 # Attempt to discover HDHR devices on the LAN
@@ -86,6 +99,12 @@ else
 exit
 fi
 
+if [ "$1" = "-noscan" ]
+then
+echo "Device $ScanDev selected with tuner $ScanTuner"
+exit
+fi
+
 # Perform a tuner scan, outputting the results to $ScanResults
 #
 RunScan () {
@@ -134,6 +153,10 @@ echo "------------------------------------------------------------------------"
 if [ "$1" = "-csv" ]
 then
         echo "$ScanResults" | sed $'s/\\\t/,/g'
+elif [ "$1" = "-datalog" ]
+then
+	timestamp=`date +%Y%m%d%H%M`
+        echo "$ScanResults" | awk -v ts="$timestamp" '{print ts"\t"$1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6}' | sed $'s/\\\t/,/g' >> $DATALOG
 else
         echo "$ScanResults"
 fi
