@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2014.05.09.r1
+# v2014.05.10.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -19,7 +19,12 @@
 ######################################################################################
 
 # Set the path to the hdhomerun_config utility here
-HDHRConfig=/usr/bin/hdhomerun_config
+#
+# Common locations:
+#
+# Mac: /usr/bin/hdhomerun_config 
+# Linux: /usr/local/bin/hdhomerun_config
+HDHRConfig=/usr/local/bin/hdhomerun_config
 
 # Set the filename to log to when using the -datalog function
 DATALOG=""
@@ -29,16 +34,18 @@ then
 echo ""
 echo "Unable to locate the hdhomerun_config utility, please edit the HDHRConfig variable in this script"
 echo ""
+echo "If it's not installed, download it from here: http://www.silicondust.com/support/hdhomerun/downloads"
+echo ""
 exit
 fi
 
 if [ "$1" = "-datalog" ]
 then
-	if [ "$DATALOG" = "" ]
-	then
-	echo "You must define the DATALOG variable in this script for this function to work"
-	exit
-	fi
+if [ "$DATALOG" = "" ]
+then
+echo "You must define the DATALOG variable in this script for this function to work"
+exit
+fi
 fi
 
 # Attempt to discover HDHR devices on the LAN
@@ -56,22 +63,22 @@ fi
 # Create unique variables for each device found
 #
 FoundDev=( $Devices )
-HDHRDev1=${FoundDev[0]}
-HDHRDev2=${FoundDev[1]}
+	HDHRDev1=${FoundDev[0]}
+	HDHRDev2=${FoundDev[1]}
 
 # Functions to check the lock status of each tuner
 #
 D1T0status () {
-echo `$HDHRConfig $HDHRDev1 get /tuner0/lockkey`
+	echo `$HDHRConfig $HDHRDev1 get /tuner0/lockkey`
 }
 D1T1status () {
-echo `$HDHRConfig $HDHRDev1 get /tuner1/lockkey` 
+	echo `$HDHRConfig $HDHRDev1 get /tuner1/lockkey` 
 }
 D2T0status () {
-echo `$HDHRConfig $HDHRDev2 get /tuner0/lockkey`
+	echo `$HDHRConfig $HDHRDev2 get /tuner0/lockkey`
 }
 D2T1status () {
-echo `$HDHRConfig $HDHRDev2 get /tuner1/lockkey`
+	echo `$HDHRConfig $HDHRDev2 get /tuner1/lockkey`
 }
 
 # Determine which Device and Tuner we're going to use by looking for the first tuner that isn't locked
@@ -80,22 +87,22 @@ echo `$HDHRConfig $HDHRDev2 get /tuner1/lockkey`
 
 if [ "$(D1T0status)" = "none" ]
 then 
-        ScanDev=$HDHRDev1
-        ScanTuner=0
+ScanDev=$HDHRDev1
+ScanTuner=0
 elif [ "$(D1T1status)" = "none" ]
 then 
-        ScanDev=$HDHRDev1
-        ScanTuner=1
+ScanDev=$HDHRDev1
+ScanTuner=1
 elif [ "$(D2T0status)" = "none" ]
 then 
-        ScanDev=$HDHRDev2
-        ScanTuner=0
+ScanDev=$HDHRDev2
+ScanTuner=0
 elif [ "$(D2T1status)" = "none" ]
 then 
-        ScanDev=$HDHRDev2
-        ScanTuner=1
+ScanDev=$HDHRDev2
+ScanTuner=1
 else
-        echo "Sorry, no tuners are available"
+echo "Sorry, all tuners are in use right now. Try again later."
 exit
 fi
 
@@ -108,18 +115,18 @@ fi
 # Perform a tuner scan, outputting the results to $ScanResults
 #
 RunScan () {
-ScanResults=`$HDHRConfig $ScanDev scan $ScanTuner \
-| tr "\n" " " \
-| tr "(" " " \
-| tr ")" " " \
-| sed -e 's/SCANNING....................../\'$'\n/g' \
-| grep TSID \
-| sed -e 's/PROGRAM....//g' \
--e 's/L.....8vsb.//g' \
--e 's/TSID.........//g' \
--e 's/ss=//g' \
--e 's/s.q=//g' \
-| awk '{print  $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t\t"$7"\t"$8"\t\t"$9"\t"$10"\t\t"$11"\t"$12"\t\t"$13"\t"$14"\t\t"$15"\t"$16}'` 
+	ScanResults=`$HDHRConfig $ScanDev scan $ScanTuner \
+		    | tr "\n" " " \
+		    | tr "(" " " \
+		    | tr ")" " " \
+		    | sed -e 's/SCANNING....................../\'$'\n/g' \
+		    | grep TSID \
+		    | sed -e 's/PROGRAM....//g' \
+		    -e 's/L.....8vsb.//g' \
+		    -e 's/TSID.........//g' \
+		    -e 's/ss=//g' \
+		    -e 's/s.q=//g' \
+		    | awk '{print  $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t\t"$7"\t"$8"\t\t"$9"\t"$10"\t\t"$11"\t"$12"\t\t"$13"\t"$14"\t\t"$15"\t"$16}'` 
 }
 
 # The above awk command formats the scan results into tabbed columns
@@ -130,7 +137,7 @@ ScanResults=`$HDHRConfig $ScanDev scan $ScanTuner \
 # Count the number of channels found from the $ScanResults variable
 #
 ChansFound () {
-NumChannels=`wc -l <<< "$ScanResults"`
+	NumChannels=`wc -l <<< "$ScanResults"`
 }
 
 # Start doing some work
@@ -152,11 +159,11 @@ echo "------------------------------------------------------------------------"
 # 
 if [ "$1" = "-csv" ]
 then
-        echo "$ScanResults" | sed $'s/\\\t/,/g'
+echo "$ScanResults" | sed $'s/\\\t/,/g'
 elif [ "$1" = "-datalog" ]
 then
-	timestamp=`date +%Y%m%d%H%M`
-        echo "$ScanResults" | awk -v ts="$timestamp" '{print ts"\t"$1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6}' | sed $'s/\\\t/,/g' >> $DATALOG
+timestamp=`date "+%Y-%m-%d %H:%M"`
+echo "$ScanResults" | awk -v ts="$timestamp" '{print ts"\t"$1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6}' | sed $'s/\\\t/,/g' >> $DATALOG
 else
-        echo "$ScanResults"
+echo "$ScanResults"
 fi

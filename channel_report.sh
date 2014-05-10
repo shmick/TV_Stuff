@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_report.sh 
-# v2014.05.09.r1
+# v2014.05.10.r1
 #
 # This script will Format the output of the logged data from channel_scan.sh
 # available from https://github.com/shmick/TV_Stuff
@@ -23,17 +23,21 @@ fi
 
 if [ "$2" != "chans" ]
 then
-echo -e 'Timestamp\tRF\tStrnght\tQuality\tSymbol\tVirtual\tName'
-echo "---------------------------------------------------------------"
+echo ""
+echo -e 'Timestamp\t\tRF\tStrnght\tQuality\tSymbol\tVirtual\tName'
+echo "-----------------------------------------------------------------------"
 fi
+
+DataFile="$1"
 
 if [ "$2" = "chans" ]
 then
 echo -e 'RF\tVirtual\tName'
 echo "-------------------------"
-awk -F, '{print $2"\t"$6"\t"$7}' $1 | sort -n | uniq
+awk -F, '{print $2"\t"$6"\t"$7}' $DataFile | sort -n | uniq
 elif [ "$2" = "" ]
 then
-cat $1 | awk -F, '{print  $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}'
+awk -F, '{print  $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}' $DataFile
 else
-grep -F "$2" $1 | awk -F, '{print  $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}'
+grep -F "$2" $DataFile | awk -F, '{print  $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}'
+fi
