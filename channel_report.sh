@@ -27,45 +27,52 @@ DataFile="$1"
 Arg2="$2"
 
 WideHeader () {
-echo ""
-echo -e 'Timestamp\t\tRF\tStrnght\tQuality\tSymbol\tVirtual\tName'
-echo "-----------------------------------------------------------------------"
+	echo ""
+	echo -e 'Timestamp\t\tRF\tStrnght\tQuality\tSymbol\tVirtual\tName'
+	echo "-----------------------------------------------------------------------"
 }
 
 BriefHeader () {
-echo -e 'RF\tVirtual\tName'
-echo "-------------------------"
+	echo -e 'RF\tVirtual\tName'
+	echo "-------------------------"
 }
 
 UniqueChans () {
-BriefHeader
-awk -F, '{print $2"\t"$6"\t"$7}' $DataFile | sort -n | uniq
+	BriefHeader
+	awk -F, '{print $2"\t"$6"\t"$7}' $DataFile | sort -n | uniq
 }
 
 ChanReport () {
-for i in `awk -F, '{print $7}' $DataFile | sort -n | uniq`
-do
-WideHeader
-grep $i $DataFile | awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}'
-done
+	for i in `awk -F, '{print $7}' $DataFile | sort -n | uniq`
+	do
+	WideHeader
+	grep $i $DataFile | awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}'
+	done
+}
+
+LastSeen () {
+	for i in `awk -F, '{print $7}' $DataFile | sort -n | uniq`
+	do
+	grep $i $DataFile | awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}' | tail -1
+	done
 }
 
 BriefChanReport () {
-for i in `awk -F, '{print $7}' $DataFile | sort -n | uniq`
-do
-WideHeader
-grep $i $DataFile | awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}' | tail -12
-done
+	for i in `awk -F, '{print $7}' $DataFile | sort -n | uniq`
+	do
+	WideHeader
+	grep $i $DataFile | awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}' | tail -12
+	done
 }
 
 SearchReport () {
-WideHeader
-grep -F "$Arg2" $DataFile | awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}'
+	WideHeader
+	grep -F "$Arg2" $DataFile | awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}'
 }
 
 ListAllData () {
-WideHeader
-awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}' $DataFile
+	WideHeader
+	awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}' $DataFile
 }
 
 if [ "$2" = "" ]
@@ -74,6 +81,10 @@ ListAllData
 elif [ "$2" = "chans" ]
 then
 UniqueChans
+elif [ "$2" = "lastseen" ]
+then
+WideHeader
+LastSeen
 elif [ "$2" = "chanreport" ]
 then
 ChanReport
