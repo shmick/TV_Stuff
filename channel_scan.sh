@@ -75,7 +75,7 @@ CheckTunerLockStatus () {
 		ScanTuner=$Tuner
 		break
 		fi
-	done
+		done
 	if [ "$ScanDev" != "" ]
 	then
 	break
