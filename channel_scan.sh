@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2014.05.10.r2
+# v2014.05.11.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -26,10 +26,8 @@
 # Linux: /usr/local/bin/hdhomerun_config
 HDHRConfig=/usr/local/bin/hdhomerun_config
 
-# Set the filename to log to when using the -datalog function
-DATALOG=""
-
 Arg1=$1
+Arg2=$2
 
 if [ ! -x $HDHRConfig ]
 then
@@ -41,27 +39,26 @@ echo ""
 exit
 fi
 
-if [ "$1" = "-datalog" ]
+if [[ "$Arg1" = "-datalog" && "$Arg2" = "" ]]
 then
-	if [ "$DATALOG" = "" ]
-	then
-	echo "You must define the DATALOG variable in this script for this function to work"
-	exit
-	fi
+echo ""
+echo "You must specify a file ie: $0 $1 /path/to/datalog.txt"
+echo ""
+exit
 fi
 
 DiscoverDevices () {
-	# Attempt to discover HDHR devices on the LAN
-	#
-	Devices=`$HDHRConfig discover | awk '{print $3}'`
-	
-	# Exit if no device are found
-	#
-	if [ "$Devices" == "found" ]
-	then
-	echo "No HDHomeRun units detected, exiting"
-	exit
-	fi
+# Attempt to discover HDHR devices on the LAN
+#
+Devices=`$HDHRConfig discover | awk '{print $3}'`
+
+# Exit if no device are found
+#
+if [ "$Devices" == "found" ]
+then
+echo "No HDHomeRun units detected, exiting"
+exit
+fi
 }
 
 CheckTunerLockStatus () {
@@ -75,7 +72,7 @@ CheckTunerLockStatus () {
 		ScanTuner=$Tuner
 		break
 		fi
-		done
+	done
 	if [ "$ScanDev" != "" ]
 	then
 	break
@@ -92,11 +89,11 @@ CheckTunerLockStatus () {
 }
 
 CheckNoScan () {
-	if [ "$Arg1" = "-noscan" ]
-	then
-	echo "Device $ScanDev selected with tuner $ScanTuner"
-	exit
-	fi
+if [ "$Arg1" = "-noscan" ]
+then
+echo "Device $ScanDev selected with tuner $ScanTuner"
+exit
+fi
 }
 
 # Perform a tuner scan, outputting the results to $ScanResults
@@ -137,7 +134,7 @@ if [ "$1" = "-csv" ]
 elif [ "$1" = "-datalog" ]
 	then
 	timestamp=`date "+%Y-%m-%d %H:%M"`
-	echo "$ScanResults" | awk -v ts="$timestamp" '{print ts"\t"$1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6}' | sed $'s/\\\t/,/g' >> $DATALOG
+	echo "$ScanResults" | awk -v ts="$timestamp" '{print ts"\t"$1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6}' | sed $'s/\\\t/,/g' >> $Arg2
 else
 	echo -e 'RF\tStrnght\tQuality\tSymbol\tVirtual\tName\t\tVirt#2\tName'
 	echo "------------------------------------------------------------------------"

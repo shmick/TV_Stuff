@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_report.sh 
-# v2014.05.10.r2
+# v2014.05.11.r1
 #
 # This script will Format the output of the logged data from channel_scan.sh
 # available from https://github.com/shmick/TV_Stuff
@@ -70,6 +70,13 @@ SearchReport () {
 	grep -F "$Arg2" $DataFile | awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}'
 }
 
+Last () {
+	WideHeader
+	Latest=`tail -1 $DataFile | awk -F, '{print $1}'`
+	tail -50 $DataFile | grep -F "$Latest" | sort -t, -n -k2 | awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}'
+
+}
+
 ListAllData () {
 	WideHeader
 	awk -F, '{print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7}' $DataFile
@@ -81,6 +88,9 @@ ListAllData
 elif [ "$2" = "chans" ]
 then
 UniqueChans
+elif [ "$2" = "last" ]
+then
+Last
 elif [ "$2" = "lastseen" ]
 then
 WideHeader
