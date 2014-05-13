@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2014.05.11.r1
+# v2014.05.13.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -18,18 +18,21 @@
 #
 ######################################################################################
 
-# Set the path to the hdhomerun_config utility here
-#
-# Common locations:
-#
-# Mac: /usr/bin/hdhomerun_config 
-# Linux: /usr/local/bin/hdhomerun_config
-HDHRConfig=/usr/local/bin/hdhomerun_config
+HDHRConfig=""
+
+MACOS="/usr/bin/hdhomerun_config"
+LINUX="/usr/local/bin/hdhomerun_config"
 
 Arg1=$1
 Arg2=$2
 
-if [ ! -x $HDHRConfig ]
+if [ -x "$MACOS" ]
+then
+HDHRConfig="$MACOS"
+elif [ -x "$LINUX" ]
+then
+HDHRConfig="$LINUX"
+elif [ ! -x "$HDHRConfig" ]
 then
 echo ""
 echo "Unable to locate the hdhomerun_config utility, please edit the HDHRConfig variable in this script"
@@ -91,7 +94,9 @@ CheckTunerLockStatus () {
 CheckNoScan () {
 if [ "$Arg1" = "-noscan" ]
 then
+echo ""
 echo "Device $ScanDev selected with tuner $ScanTuner"
+echo ""
 exit
 fi
 }
@@ -100,6 +105,7 @@ fi
 #
 FullScan () {
 
+	echo ""
 	echo "Beginning scan on $ScanDev, tuner $ScanTuner at `date '+%D %T'`"
 	echo ""
 	ScanResults=`$HDHRConfig $ScanDev scan $ScanTuner \
@@ -113,7 +119,8 @@ FullScan () {
 		    -e 's/TSID.........//g' \
 		    -e 's/ss=//g' \
 		    -e 's/s.q=//g' \
-		    | awk '{print  $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t\t"$7"\t"$8"\t\t"$9"\t"$10"\t\t"$11"\t"$12"\t\t"$13"\t"$14"\t\t"$15"\t"$16}'` 
+		    | awk -v OFS='\t' '{print $1,$2,$3,$4,$5,$6,"\t"$7,$8,"\t"$9,$10,"\t"$11,$12,"\t"$13,$14,"\t"$15,$16}' \
+		    | sort -n`
 # $1 through $6 are:
 # RF, Strnght, Quality, Symbol, Virtual, Name
 # $7 through $16 print up to 5 subchannels found
@@ -134,9 +141,9 @@ if [ "$1" = "-csv" ]
 elif [ "$1" = "-datalog" ]
 	then
 	timestamp=`date "+%Y-%m-%d %H:%M"`
-	echo "$ScanResults" | awk -v ts="$timestamp" '{print ts"\t"$1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6}' | sed $'s/\\\t/,/g' >> $Arg2
+	echo "$ScanResults" | awk -v ts="$timestamp" '{OFS="\t" ; print ts,$1,$2,$3,$4,$5,$6}' | sed $'s/\\\t/,/g' >> $Arg2
 else
 	echo -e 'RF\tStrnght\tQuality\tSymbol\tVirtual\tName\t\tVirt#2\tName'
-	echo "------------------------------------------------------------------------"
+	printf '%.0s-' {1..72}; echo
 	echo "$ScanResults"
 fi
