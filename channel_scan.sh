@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2014.05.14.r1
+# v2014.05.14.r2
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -132,6 +132,7 @@ CheckTunerLockStatus () {
 }
 
 ReportLockStatus () {
+	echo ""
 	for Unit in $Devices
 	do
 		for Tuner in 0 1
@@ -145,9 +146,8 @@ ReportLockStatus () {
 
 CheckNoScan () {
 if [ "$Arg1" = "-noscan" ]
-echo ""
-ReportLockStatus
 then
+ReportLockStatus
 echo ""
 echo "Selecting Device $ScanDev Tuner $ScanTuner"
 echo ""
