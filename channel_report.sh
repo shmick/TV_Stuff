@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_report.sh 
-# v2014.05.12.r1
+# v2014.05.13.r1
 #
 # This script will Format the output of the logged data from channel_scan.sh
 # available from https://github.com/shmick/TV_Stuff
@@ -90,7 +90,7 @@ Chans () {
 }
 
 ChanReport () {
-	for i in `AWKCMD2`
+	for i in $(AWKCMD2)
 	do
 	WideHeader
 	grep $i $DataFile | AWKCMD3
@@ -99,7 +99,7 @@ ChanReport () {
 
 LastSeen () {
         results=$(
-	for i in `AWKCMD2`
+	for i in $(AWKCMD2)
 	do
 	grep $i $DataFile | AWKCMD3 | tail -1
 	done)
@@ -108,7 +108,7 @@ LastSeen () {
 
 
 BriefChanReport () {
-	for i in `AWKCMD2`
+	for i in $(AWKCMD2)
 	do
 	WideHeader
 	grep $i $DataFile | AWKCMD3 | tail -12
@@ -123,7 +123,7 @@ SearchReport () {
 Last () {
 	WideHeader
         results=$(
-	Latest=`tail -1 $DataFile | awk -F, '{print $1}'`
+	Latest=$(tail -1 $DataFile | awk -F, '{print $1}')
 	tail -50 $DataFile | grep -F "$Latest" | sort -n -t, -k2,2 | AWKCMD3 )
 	ResultsCount
 }
