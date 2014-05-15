@@ -11,7 +11,7 @@ If no options are given, a full channel scan will be performed on the first avai
 The scan output will look like this:
 
 
-![Alt text](/../screenshots/scan-ouput.png?raw=true)
+![Alt text](/../screenshots/screenshots/scan-ouput.png?raw=true)
 
 Example: 
 
