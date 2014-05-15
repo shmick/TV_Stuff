@@ -2,6 +2,10 @@ TV Stuff
 ========
 Scripts and other misc data for my TV setup.
 
+channel_scan.sh :
+
+Performs scanning Z
+
 Software and hardware in use:
 
 [Apple Mac Mini](http://www.apple.com/ca/mac-mini/)
