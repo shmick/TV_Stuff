@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2014.05.14.r2
+# v2014.05.14.r3
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -19,6 +19,11 @@
 #Specify the full path to your hdhomerun_config binary if it's not found
 HDHRConfig=""
 
+###############################################
+# There are no options to set below this line #
+###############################################
+
+DetectOS () {
 MACOS="/usr/bin/hdhomerun_config"
 LINUX="/usr/local/bin/hdhomerun_config"
 
@@ -37,11 +42,13 @@ echo "If it's not installed, download it from here: http://www.silicondust.com/s
 echo ""
 exit
 fi
+}
 
-if [ "$1" = "--help" ]
+DisplayHelp () {
+if [ "$Arg1" = "--help" ]
 then
 echo ""
-echo "Usage: $0 [option]"
+echo "Usage: $Arg0 [option]"
 echo ""
 echo "Options are:"
 echo ""
@@ -54,17 +61,14 @@ echo "-noscan : Report only what device and tuner would be used without running 
 echo ""
 exit
 fi
+}
 
-Arg1=$1
-Arg2=$2
-Arg3=$3
-Arg4=$4
-
+OptionsCheck () {
 # Exit if -datalog option is called but no file is specified
 if [[ "$Arg1" = "-datalog" && "$Arg2" = "" ]] ||  [[ "$Arg3" = "-datalog" && "$Arg4" = "" ]]
 then
 echo ""
-echo "You must specify a datalog file ie: $0 -datalog datalogfile"
+echo "You must specify a datalog file ie: $Arg0 -datalog datalogfile"
 echo ""
 exit
 fi
@@ -86,6 +90,7 @@ Devices="$Arg4"
 else
 Devices=""
 fi
+}
 
 DiscoverDevices () {
 # Attempt to discover HDHR devices on the LAN
@@ -158,50 +163,41 @@ fi
 
 # Perform a tuner scan, outputting the results to $ScanResults
 #
-FullScan () {
+# $1 through $6 are:
+# RF, Strnght, Quality, Symbol, Virtual, Name
+# $7 through $16 print up to 5 subchannels found
+
+GetScanData () {
 
 	echo ""
 	echo "Beginning scan on $ScanDev, tuner $ScanTuner at $(date '+%D %T')"
 	echo ""
 	ScanResults=$($HDHRConfig $ScanDev scan $ScanTuner \
-		    | tr "\n" " " \
-		    | tr "(" " " \
-		    | tr ")" " " \
-		    | sed -e 's/SCANNING....................../\'$'\n/g' \
-		    | grep TSID \
-		    | sed -e 's/PROGRAM....//g' \
-		    -e 's/L.....8vsb.//g' \
-		    -e 's/TSID.........//g' \
-		    -e 's/ss=//g' \
-		    -e 's/s.q=//g' \
-		    | awk -v OFS='\t' '{print $1,$2,$3,$4,$5,$6,"\t"$7,$8,"\t"$9,$10,"\t"$11,$12,"\t"$13,$14,"\t"$15,$16}' \
-		    | sort -n)
-# $1 through $6 are:
-# RF, Strnght, Quality, Symbol, Virtual, Name
-# $7 through $16 print up to 5 subchannels found
+		| tr -s "\n()=:" " " \
+		| sed 's/SCANNING/\'$'\n/g' \
+		| grep TSID )
 
         NumChannels=$(wc -l <<< "$ScanResults")
 	echo "${NumChannels// }" channels found
 }
 
-DiscoverDevices
-CheckTunerLockStatus
-CheckNoScan
-FullScan
-
 LogOutput () {
 	timestamp=$(date "+%Y-%m-%d %H:%M")
-	echo "$ScanResults" | awk -v ts="$timestamp" '{OFS="\t" ; print ts,$1,$2,$3,$4,$5,$6}' | sed $'s/\\\t/,/g' >> $DataLog
+	echo "$ScanResults" \
+	| awk -v ts="$timestamp" '{OFS="," ; print ts,$3,$7,$9,$11,$16,$17}' \
+	| sort -n >> $DataLog
 	}
 
 StdOutput () {
 	echo -e 'RF\tStrnght\tQuality\tSymbol\tVirtual\tName\t\tVirt#2\tName'
 	printf '%.0s-' {1..72}; echo
-	echo "$ScanResults"
+	echo "$ScanResults" \
+	| awk -v OFS='\t' '{print $3,$7,$9,$11,$16,$17,"\t"$20,$21,"\t"$24,$25,"\t"$28,$29,"\t"$32,$33,"\t"$36,$37}' \
+	| sort -n
 	}
 
-# Options are -csv or datalog 
-if [ "$1" = "-csv" ]
+OutputFormat () {
+if [ "$Arg1" = "-csv" ]
 	then
 	echo "$ScanResults" | sed $'s/\\\t/,/g'
 elif [ "$Arg1" = "-datalog" ]
@@ -215,3 +211,19 @@ elif [ "$Arg3" = "-datalog" ]
 else
 	StdOutput
 fi
+}
+
+Arg0=$0
+Arg1=$1
+Arg2=$2
+Arg3=$3
+Arg4=$4
+
+DetectOS
+DisplayHelp
+OptionsCheck
+DiscoverDevices
+CheckTunerLockStatus
+CheckNoScan
+GetScanData
+OutputFormat
