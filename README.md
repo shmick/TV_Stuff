@@ -10,6 +10,7 @@ If no options are given, a full channel scan will be performed on the first avai
 
 The scan output will look like this:
 
+```
 15 channels found
 RF	Strnght	Quality	Symbol	Virtual	Name		Virt#2	Name
 ------------------------------------------------------------------------
@@ -28,6 +29,7 @@ RF	Strnght	Quality	Symbol	Virtual	Name		Virt#2	Name
 44	87	93	100	57.1	CITYTV												
 47	85	93	100	47.1	CFMT												
 49	50	62	100	49.1	WNYO-HD												
+```
 
 Example: 
 
