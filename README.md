@@ -12,6 +12,10 @@ The scan output will look like this:
 
 ![Alt text](/../screenshots/screenshots/scan-ouput.png?raw=true)
 
+channel_report.sh - Generate reports from the output of the datalog file created by channel_scan.sh
+
+###### Useage: 'channel_report.sh --help' will display available options
+
 Other software and hardware in use:
 
 [Apple Mac Mini](http://www.apple.com/ca/mac-mini/)
