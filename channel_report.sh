@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_report.sh 
-# v2014.05.13.r1
+# v2014.05.30.r1
 #
 # This script will Format the output of the logged data from channel_scan.sh
 # available from https://github.com/shmick/TV_Stuff
@@ -17,10 +17,7 @@
 #
 ######################################################################################
 
-if [[ "$1" = "--help" || "$2" = "--help" ]]
-then
-echo ""
-echo "Usage: channel_report.sh datafile [option]"
+Help () {
 echo ""
 echo "Options are:"
 echo ""
@@ -31,25 +28,39 @@ echo "briefchanreport : Similar to chanreport, limited to last 12 results per ch
 echo "lastseen : Display the most recent result of each channel in the datalog"
 echo "[search term] : Provide a search term ie: TVO"
 echo ""
-exit
-elif [ ! -f "$1" ]
-then
-echo "Usage: channel_report.sh datafile [option]"
-echo ""
-echo "$0 --help for a list of options"
-echo ""
-exit
-fi
+Usage
+}
 
+Usage () {
+echo "Usage: $(basename $0) datafile [option]"
+echo ""
+echo "Use -help for a list of options"
+echo ""
+exit 1
+}
+
+case "$1" in
+--help|-help|-h|help)
+Help
+;;
+*)
+if [ ! -f "$1" ]
+then
+Usage
+else
 DataFile="$1"
+fi
+esac
+
 Arg2="$2"
 
-if [ "$3" = "" ]
-then
+case "$3" in
+.)
 Arg3="."
-else
+;;
+*)
 Arg3="$3"
-fi
+esac
 
 AWKCMD1 () {
 awk -F, '{OFS="\t" ; print $2,$6,$7}' $DataFile | sort -n | uniq
@@ -64,8 +75,8 @@ awk -F, '{OFS="\t" ; print $1,$2,$3,$4,$5,$6,$7}' $1
 }
 
 ResultsCount () {
-echo -e "$results" | sort -n -k3 | grep "$Arg3"
-found=$(echo -e "$results" | sort -n -k3 | grep "$Arg3" | wc -l)
+sort -n -k3 <<< "$results" | grep "$Arg3"
+found=$(sort -n -k3 <<< "$results" | grep "$Arg3" | wc -l)
 echo ""
 echo "$found channels found"
 echo ""
@@ -117,7 +128,9 @@ BriefChanReport () {
 
 SearchReport () {
 	WideHeader
-	grep -F "$Arg2" $DataFile | AWKCMD3 
+	results=$(
+	grep -F "$Arg2" $DataFile | AWKCMD3 )
+	ResultsCount
 }
 
 Last () {
@@ -133,25 +146,26 @@ ListAllData () {
 	AWKCMD3 $DataFile
 }
 
-if [ "$2" = "" ]
-then
-ListAllData
-elif [ "$2" = "chans" ]
-then
+case "$2" in
+'chans')
 Chans
-elif [ "$2" = "last" ]
-then
+;;
+'last')
 Last
-elif [ "$2" = "lastseen" ]
-then
+;;
+'lastseen')
 WideHeader
 LastSeen
-elif [ "$2" = "chanreport" ]
-then
+;;
+'chanreport')
 ChanReport
-elif [ "$2" = "briefchanreport" ]
-then
+;;
+'briefchanreport')
 BriefChanReport
-else
+;;
+--help|-help|-h|help)
+Help
+;;
+*)
 SearchReport
-fi
+esac
