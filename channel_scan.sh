@@ -62,7 +62,6 @@ DisplayHelp () {
 	exit
 }
 
-
 ReportLockStatus () {
 	echo ""
 	for Unit in $Devices
@@ -190,8 +189,6 @@ CheckTunerLockStatus () {
 	exit
 	fi
 }
-
-
 
 GetScanData () {
 # GetScanData : Run a scan, parse the output and
