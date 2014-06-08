@@ -10,26 +10,6 @@ If no options are given, a full channel scan will be performed on the first avai
 
 The scan output will look like this:
 
-![Alt text](/../screenshots/screenshots/scan-ouput.png?raw=true)
-
-channel_report.sh - Generate reports from the output of the datalog file created by channel_scan.sh
-
-###### Useage: 'channel_report.sh --help' will display available options
-
-Other software and hardware in use:
-
-[Apple Mac Mini](http://www.apple.com/ca/mac-mini/)
-
-[Silicon Dust HDHomeRun tuners](http://www.silicondust.com/products_new/)
-
-[Elgato EyeTV](http://www.elgato.com/eyetv/eyetv-3)
-
-[Remote Buddy](http://www.iospirit.com/products/remotebuddy/)
-
-
-Licensing: This is distributed unider the Creative Commons 3.0 Non-commecrial, Attribution, Share-Alike license. You can use the code for noncommercial purposes. You may NOT sell it. If you do use it, then you must make an attribution to me (i.e. Include my name and thank me for the hours I spent on this)
-
-
 ```
 Beginning scan on 87654321, tuner 0 at 12/31/13 09:00:00
 
@@ -55,3 +35,22 @@ RF		Strnght	Quality	Symbol	Virtual	Name		Virt#2	Name
 47		87		89		100		47.1	CFMT
 49		68		84		100		49.1	WNYO-HD	
 ```
+
+channel_report.sh - Generate reports from the output of the datalog file created by channel_scan.sh
+
+###### Useage: 'channel_report.sh --help' will display available options
+
+Other software and hardware in use:
+
+[Apple Mac Mini](http://www.apple.com/ca/mac-mini/)
+
+[Silicon Dust HDHomeRun tuners](http://www.silicondust.com/products_new/)
+
+[Elgato EyeTV](http://www.elgato.com/eyetv/eyetv-3)
+
+[Remote Buddy](http://www.iospirit.com/products/remotebuddy/)
+
+
+Licensing: This is distributed unider the Creative Commons 3.0 Non-commecrial, Attribution, Share-Alike license. You can use the code for noncommercial purposes. You may NOT sell it. If you do use it, then you must make an attribution to me (i.e. Include my name and thank me for the hours I spent on this)
+
+
