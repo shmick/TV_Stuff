@@ -36,8 +36,8 @@ Beginning scan on 10396549, tuner 0 at 06/08/14 13:42:20
 18 channels found
 RF		Strnght	Quality	Symbol	Virtual	Name		Virt#2	Name
 ------------------------------------------------------------------------
-9		87		89		100		9.1	CFTO						
-14		59		71		100		29.1	WUTV-HD		29.2	TCN								
+9		87		89		100		9.1		CFTO						
+14		59		71		100		29.1		WUTV-HD		29.2	TCN								
 15		54		54		100		11.1	CHCH-DT											
 19		83		82		100		19.1	TVO											
 20		83		80		100		5.1	CBLT-DT											
