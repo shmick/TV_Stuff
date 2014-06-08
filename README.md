@@ -11,6 +11,8 @@ If no options are given, a full channel scan will be performed on the first avai
 The scan output will look like this:
 
 ```
+$ ./channel_scan.sh
+
 Beginning scan on 87654321, tuner 0 at 12/31/13 09:00:00
 
 18 channels found
