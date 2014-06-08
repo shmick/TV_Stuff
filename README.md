@@ -34,7 +34,7 @@ Licensing: This is distributed unider the Creative Commons 3.0 Non-commecrial, A
 Beginning scan on 10396549, tuner 0 at 06/08/14 13:42:20
 
 18 channels found
-RF		Strnght		Quality	Symbol	Virtual	Name		Virt#2	Name
+RF		Strnght	Quality	Symbol	Virtual	Name		Virt#2	Name
 ------------------------------------------------------------------------
 9		87		89	100	9.1	CFTO						
 14		59		71	100	29.1	WUTV-HD		29.2	TCN								
