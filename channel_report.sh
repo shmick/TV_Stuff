@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_report.sh 
-# v2014.05.30.r1
+# v2014.06.08.r1
 #
 # This script will Format the output of the logged data from channel_scan.sh
 # available from https://github.com/shmick/TV_Stuff
@@ -62,15 +62,15 @@ Arg3="."
 Arg3="$3"
 esac
 
-AWKCMD1 () {
+FindUniqueChans () {
 awk -F, '{OFS="\t" ; print $2,$6,$7}' $DataFile | sort -n | uniq
 }
 
-AWKCMD2 () {
+GetChannelNames () {
 awk -F, '{print $7}' $DataFile | sort -n | uniq
 }
 
-AWKCMD3 () {
+OutputWideData () {
 awk -F, '{OFS="\t" ; print $1,$2,$3,$4,$5,$6,$7}' $1
 }
 
@@ -95,41 +95,39 @@ BriefHeader () {
 
 Chans () {
 	BriefHeader
-        results=$(
-	AWKCMD1 )
+        results=$(FindUniqueChans)
 	ResultsCount 
 }
 
 ChanReport () {
-	for i in $(AWKCMD2)
+	for i in $(GetChannelNames)
 	do
 	WideHeader
-	grep $i $DataFile | AWKCMD3
+	grep $i $DataFile | OutputWideData
 	done
 }
 
 LastSeen () {
         results=$(
-	for i in $(AWKCMD2)
+	for i in $(GetChannelNames)
 	do
-	grep $i $DataFile | AWKCMD3 | tail -1
+	grep $i $DataFile | OutputWideData | tail -1
 	done)
 	ResultsCount
 	}
 
 
 BriefChanReport () {
-	for i in $(AWKCMD2)
+	for i in $(GetChannelNames)
 	do
 	WideHeader
-	grep $i $DataFile | AWKCMD3 | tail -12
+	grep $i $DataFile | OutputWideData | tail -12
 	done
 }
 
 SearchReport () {
 	WideHeader
-	results=$(
-	grep -F "$Arg2" $DataFile | AWKCMD3 )
+	results=$(grep -F "$Arg2" $DataFile | OutputWideData)
 	ResultsCount
 }
 
@@ -137,13 +135,13 @@ Last () {
 	WideHeader
         results=$(
 	Latest=$(tail -1 $DataFile | awk -F, '{print $1}')
-	tail -50 $DataFile | grep -F "$Latest" | sort -n -t, -k2,2 | AWKCMD3 )
+	tail -50 $DataFile | grep -F "$Latest" | sort -n -t, -k2,2 | OutputWideData )
 	ResultsCount
 }
 
 ListAllData () {
 	WideHeader
-	AWKCMD3 $DataFile
+	OutputWideData $DataFile
 }
 
 case "$2" in
