@@ -36,7 +36,7 @@ RF		Strnght	Quality	Symbol	Virtual	Name		Virt#2	Name
 49		68		84		100		49.1	WNYO-HD	
 ```
 
-[channel_report.sh](channel_report.sh) - Generate reports from the output of the datalog file created by channel_scan.sh
+[channel_report.sh](channel_report.sh) - Generate reports from the output of the datalog file created by [channel_scan.sh](channel_scan.sh)
 
 ###### Usage: 'channel_report.sh --help' will display available options
 
