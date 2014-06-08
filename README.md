@@ -20,7 +20,7 @@ Other software and hardware in use:
 
 [Apple Mac Mini](http://www.apple.com/ca/mac-mini/)
 
-[Silicon Dust HDHomeRun tuners](http://www.silicondust.com/products/hdhomerun/atsc/)
+[Silicon Dust HDHomeRun tuners](http://www.silicondust.com/products_new/)
 
 [Elgato EyeTV](http://www.elgato.com/eyetv/eyetv-3)
 
