@@ -42,7 +42,7 @@ RF		Strnght	Quality	Symbol	Virtual	Name		Virt#2	Name
 
 ###### Usage: 'channel_report.sh --help' will display available options
 
-Other software and hardware in use:
+Other software and hardware in use
 -----------------------------------
 
 * [Apple Mac Mini](http://www.apple.com/ca/mac-mini/)
