@@ -43,15 +43,15 @@ RF		Strnght	Quality	Symbol	Virtual	Name		Virt#2	Name
 ###### Usage: 'channel_report.sh --help' will display available options
 
 Other software and hardware in use:
+-----------------------------------
 
-[Apple Mac Mini](http://www.apple.com/ca/mac-mini/)
+* [Apple Mac Mini](http://www.apple.com/ca/mac-mini/)
 
-[Silicon Dust HDHomeRun tuners](http://www.silicondust.com/products_new/)
+* [Elgato EyeTV](http://www.elgato.com/eyetv/eyetv-3)
 
-[Elgato EyeTV](http://www.elgato.com/eyetv/eyetv-3)
+* [Remote Buddy](http://www.iospirit.com/products/remotebuddy/)
 
-[Remote Buddy](http://www.iospirit.com/products/remotebuddy/)
-
+* [Silicon Dust HDHomeRun tuners](http://www.silicondust.com/products_new/)
 
 Licensing: This is distributed unider the Creative Commons 3.0 Non-commecrial, Attribution, Share-Alike license. You can use the code for noncommercial purposes. You may NOT sell it. If you do use it, then you must make an attribution to me (i.e. Include my name and thank me for the hours I spent on this)
 
