@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_report.sh 
-# v2014.06.08.r1
+# v2014.06.14.r1
 #
 # This script will Format the output of the logged data from channel_scan.sh
 # available from https://github.com/shmick/TV_Stuff
@@ -107,15 +107,23 @@ ChanReport () {
 	done
 }
 
-LastSeen () {
+FirstSeen () {
         results=$(
 	for i in $(GetChannelNames)
 	do
-	grep $i $DataFile | OutputWideData | tail -1
+	grep -m 1 $i $DataFile | OutputWideData
 	done)
 	ResultsCount
 	}
 
+LastSeen () {
+        results=$(
+	for i in $(GetChannelNames)
+	do
+	tac $DataFile | grep -m 1 $i | OutputWideData
+	done)
+	ResultsCount
+	}
 
 BriefChanReport () {
 	for i in $(GetChannelNames)
@@ -154,6 +162,10 @@ Last
 'lastseen')
 WideHeader
 LastSeen
+;;
+'firstseen')
+WideHeader
+FirstSeen
 ;;
 'chanreport')
 ChanReport

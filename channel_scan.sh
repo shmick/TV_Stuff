@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2014.05.31.r1
+# v2014.06.14.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -136,6 +136,16 @@ CheckOptions () {
 			Devices="$Arg4"
 			fi
 	esac
+
+	if [ -n "$Devices" ]
+	then
+		if [ "$(echo ${#Devices})" != "8" ]
+		then
+		NoDevID
+		exit 1
+		fi
+	fi
+
 }
 
 NoDatalog () {
@@ -175,7 +185,7 @@ CheckTunerLockStatus () {
 			break
 			fi
 			done
-		if [ ! -z "$ScanDev" ]
+		if [ -n "$ScanDev" ]
 		then
 		break
 		fi 
@@ -200,7 +210,7 @@ GetScanData () {
 	ScanResults=$($HDHRConfig $ScanDev scan $ScanTuner \
 	| tr -s "\n()=:" " " \
 	| sed 's/SCANNING/\'$'\n/g' \
-	| grep TSID )
+	| grep "seq 100" )
 
 	NumChannels=$(wc -l <<< "$ScanResults")
 #echo "${NumChannels// }" channels found
