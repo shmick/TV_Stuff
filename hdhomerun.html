@@ -5,7 +5,7 @@
 function view(link) {
 	var bitrate = document.getElementById('bitrate');
 	var duration = document.getElementById('duration');
-	var url = "//http://my.hdhomerun/auto/v" + link.name + "?transcode=" + bitrate.options[bitrate.selectedIndex].value + "&duration=" +  duration.options[duration.selectedIndex].value;
+	var url = "http://my.hdhomerun/auto/v" + link.name + "?transcode=" + bitrate.options[bitrate.selectedIndex].value + "&duration=" +  duration.options[duration.selectedIndex].value;
 	link.setAttribute("href", url);
 }
 </script>
