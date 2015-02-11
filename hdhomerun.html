@@ -1,0 +1,62 @@
+<html>
+<head>
+
+<script type="text/javascript">
+function view(link) {
+	var bitrate = document.getElementById('bitrate');
+	var duration = document.getElementById('duration');
+	var url = "//http://my.hdhomerun/auto/v" + link.name + "?transcode=" + bitrate.options[bitrate.selectedIndex].value + "&duration=" +  duration.options[duration.selectedIndex].value;
+	link.setAttribute("href", url);
+}
+</script>
+
+<style type="text/css">
+select { font-size: 60pt; }
+img { width: 300px; height: 250px; }
+table { border: 1; border-spacing: 1; border-padding: 1; }
+</style>
+
+<body>
+
+<select id="bitrate" name="bitrate"> 
+<option value="internet240">240</option>
+<option value="internet360">360</option>
+<option selected value="internet480">480</option>
+<option value="internet720">720</option>
+<option value="mobile">mobile</option>
+<option value="heavy">heavy</option>
+</select>
+
+<select id="duration" name="duration">
+<option value="60">1 min</option>
+<option value="1800">30 mins</option>
+<option selected value="3600">1 hour</option>
+<option value="7200">2 hours</option>
+<option value="14400">4 hours</option>
+<option value="21600">6 hours</option>
+</select>
+
+<table><tr>
+<td><a onclick="view(this);" class="links" name="5.1" href="javascript:void(0);"><img src="./imgs/CBCHD_ca.jpg"></img></a></td>
+<td><a onclick="view(this);" class="links" name="9.1" href="javascript:void(0);"><img src="./imgs/CTVHD_ca.jpg"</img></a></td>
+<td><a onclick="view(this);" class="links" name="41.1" href="javascript:void(0);"><img src="./imgs/GlobalHD_ca.jpg"</img></a></td>
+</tr><tr>
+<td><a onclick="view(this);" class="links" name="11.1" href="javascript:void(0);"><img src="./imgs/CHCHTV_ca.jpg"</img></a></td>
+<td><a onclick="view(this);" class="links" name="57.1" href="javascript:void(0);"><img src="./imgs/CityTVHD_ca.jpg"</img></a></td>
+<td><a onclick="view(this);" class="links" name="47.1" href="javascript:void(0);"><img src="./imgs/Omni1_ca.jpg"</img></a></td>
+</tr><tr>
+<td><a onclick="view(this);" class="links" name="40.1" href="javascript:void(0);"><img src="./imgs/Omni2_ca.jpg"</img></a></td>
+<td><a onclick="view(this);" class="links" name="19.1" href="javascript:void(0);"><img src="./imgs/TVOHD_ca.jpg"</img></a></td>
+<td><a onclick="view(this);" class="links" name="36.1" href="javascript:void(0);"><img src="./imgs/YESHD_us.jpg"</img></a></td>
+</tr><tr>
+<td><a onclick="view(this);" class="links" name="7.1" href="javascript:void(0);"><img src="./imgs/ABC_us.jpg"</img></a></td>
+<td><a onclick="view(this);" class="links" name="4.1" href="javascript:void(0);"><img src="./imgs/CBS02_us.jpg"</img></a></td>
+<td><a onclick="view(this);" class="links" name="29.1" href="javascript:void(0);"><img src="./imgs/FoxHD.jpg"</img></a></td>
+</tr><tr>
+<td><a onclick="view(this);" class="links" name="2.1" href="javascript:void(0);"><img src="./imgs/NBCHD.jpg"</img></a></td>
+<td><a onclick="view(this);" class="links" name="17.1" href="javascript:void(0);"><img src="./imgs/PBS_uk.jpg"</img></a></td>
+<td><a onclick="view(this);" class="links" name="23.1" href="javascript:void(0);"><img src="./imgs/CWHD_us.jpg"</img></a></td>
+</tr></table>
+
+</body>
+</html>
