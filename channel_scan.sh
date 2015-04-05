@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2014.06.14.r1
+# v2015.04.05.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -46,7 +46,7 @@ fi
 
 DisplayHelp () {
 	echo ""
-	echo "Usage: $(basename 0) [option]"
+	echo "Usage: $(basename $0) [option]"
 	echo ""
 	echo "Options are:"
 	echo ""
@@ -161,7 +161,7 @@ DiscoverDevices () {
 #
 	if [ -z "$Devices" ]
 	then
-	Devices=$($HDHRConfig discover | awk '{print $3}')
+	Devices=$($HDHRConfig discover | sort -nr | awk '/^hdhomerun device/ {print $3}')
 	fi
 
 # Exit if no device are found
@@ -222,7 +222,7 @@ LogOutput () {
 # append it to $DataLog
 
 	timestamp=$(date "+%Y-%m-%d %H:%M")
-	awk -v ts="$timestamp" '{OFS="," ; print ts,$3,$7,$9,$11,$16,$17}' \
+	awk -v ts="$timestamp" '{OFS="," ; print ts,$3,$7,($7 * 60 / 100 -60),($7 * 60 / 100 -60 -48.75),$9,$11,$16,$17}' \
 	<<< "$ScanResults" \
 	| sort -n >> $DataLog
 }
@@ -230,16 +230,16 @@ LogOutput () {
 StdOutput () {
 # StdOutput : This is the standard output when no options are used
 
-	echo -e 'RF\tStrnght\tQuality\tSymbol\tVirtual\tName\t\tVirt#2\tName'
+	echo -e 'RF\tStrngth\tdBmV\tdBm\tQuality\tSymbol\tVirt#1\tName\t\tVirt#2\tName\t\tVirt#3\tName\t\tVirt#4\tName\t\tVirt#5\tName'
 	printf '%.0s-' {1..72}; echo
-	awk -v OFS='\t' '{print $3,$7,$9,$11,$16,$17,"\t"$20,$21,"\t"$24,$25,"\t"$28,$29,"\t"$32,$33,"\t"$36,$37}' \
+	awk -v OFS='\t' '{print $3,$7,($7 * 60 / 100 - 60),($7 * 60 / 100 -60 -48.75),$9,$11,$16,$17,"\t"$20,$21,"\t"$24,$25,"\t"$28,$29,"\t"$32,$33,"\t"$36,$37}' \
 	<<< "$ScanResults" \
 	| sort -n
 }
 
 CSVOutput () {
 # CSVOutput : Same as standard output, but in CSV format
-	awk -v OFS=',' '{print $3,$7,$9,$11,$16,$17,$20,$21,$24,$25,$28,$29,$32,$33,$36,$37}' \
+	awk -v OFS=',' '{print $3,$7,($7 * 60 / 100 - 60),($7 * 60 / 100 -60 -48.75),$9,$11,$16,$17,"\t"$20,$21,"\t"$24,$25,"\t"$28,$29,"\t"$32,$33,"\t"$36,$37}' \
 	<<< "$ScanResults" \
 	| sort -n
 }
