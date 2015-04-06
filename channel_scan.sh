@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2015.04.05.r1
+# v2015.04.06.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -50,14 +50,12 @@ DisplayHelp () {
 	echo ""
 	echo "Options are:"
 	echo ""
-	echo "-devid 12349876 : Provide a device ID instead of using auto discovery"
-	echo "-datalog /path/to/filename : Useful for scheduling scans and logging the data"
-	echo ""
-	echo "The -devid and -datalog options can be used at the same time"
-	echo ""
-	echo "-noscan : Report only what device and tuner would be used without running a scan"
-	echo ""
-	echo "-help : This help info"
+	echo "-d <device id> (Provide a device ID instead of using auto discovery)"
+	echo "-t <tuner id> (Provide a tuner ID instead of using auto discovery)"
+	echo "-c Output scan results in CSV format"
+	echo "-l <filename> Log the output to <filename>"
+	echo "-n Report only what device and tuner would be used without running a scan"
+	echo "-h This help info"
 	echo ""
 	exit
 }
@@ -74,86 +72,49 @@ ReportLockStatus () {
 	done
 }
 
-CheckOptions () {
-	case "$Arg1" in
-		--help|-help|-h|help)
-			DisplayHelp
-		;;
-		-datalog)
-			if [ -z "$Arg2" ]
-			then
-			NoDatalog
-			exit 1
-			else
-			DataLog="$Arg2"
-			fi
-		;;
-		-devid)
-			if [ -z "$Arg2" ]
-			then
-			NoDevID
-			exit 1
-			else
-			Devices="$Arg2"
-			fi
-		;;
-		-n|-noscan|noscan)
-			DiscoverDevices
-			CheckTunerLockStatus
-			ReportLockStatus
-			echo ""
-			echo "Selecting Device $ScanDev Tuner $ScanTuner"
-			echo ""
-			exit
-	esac
-
-	case "$Arg2" in
-		-datalog)
-			NoDevID
-			exit 1
-		;;
-		-devid)
-			NoDatalog
-			exit 1
-	esac
-
-	case "$Arg3" in
-		-datalog)
-			if [ -z "$Arg4" ]
-			then
-			NoDatalog
-			exit 1
-			else
-			DataLog="$Arg4"
-			fi
-		;;
-		-devid)
-			if [ -z "$Arg4" ]
-			then
-			NoDevID
-			exit 1
-			else
-			Devices="$Arg4"
-			fi
-	esac
-
-	if [ -n "$Devices" ]
+CheckOpts () {
+local OPTIND
+while getopts ":hnd:t:l:c" OPTIONS
+do
+	case "$OPTIONS" in
+	h) DisplayHelp exit ;;
+	n)
+	DiscoverDevices
+	CheckTunerLockStatus
+	ReportLockStatus
+	echo ""
+	echo "Selecting Device $ScanDev Tuner $ScanTuner"
+	echo ""
+	exit
+	;;
+	d)
+	Devices=$OPTARG
+	if [ "$(echo ${#Devices})" != "8" ]
 	then
-		if [ "$(echo ${#Devices})" != "8" ]
-		then
-		NoDevID
-		exit 1
-		fi
+	NoDevID
+	exit 1
 	fi
-
-}
-
-NoDatalog () {
-	echo "You must specify a datalog file ie: $(basename 0) -datalog datalogfile"
+	;;
+	t) 
+	ScanTuner=$OPTARG 
+	;;
+	l)
+	DataLog=$OPTARG
+	;;
+	c)
+	CSV="y"
+	;;
+	:)
+	echo "Option -$OPTARG requires an argument." >&2
+	DisplayHelp
+	exit 1
+	;;
+	esac
+done
 }
 
 NoDevID () {
-	echo "You must specify a device ID"
+	echo "You must specify a proper device ID"
 }
 
 DiscoverDevices () {
@@ -163,6 +124,7 @@ DiscoverDevices () {
 	then
 	Devices=$($HDHRConfig discover | sort -nr | awk '/^hdhomerun device/ {print $3}')
 	fi
+
 
 # Exit if no device are found
 #
@@ -174,29 +136,34 @@ DiscoverDevices () {
 }
 
 CheckTunerLockStatus () {
-	for Unit in $Devices
-	do
-		for Tuner in 0 1
-			do 
-			if [ $($HDHRConfig $Unit get /tuner$Tuner/lockkey) = "none" ]
-			then
-			ScanDev=$Unit
-			ScanTuner=$Tuner
-			break
-			fi
-			done
-		if [ -n "$ScanDev" ]
-		then
-		break
-		fi 
-	done
-
-	if [ -z "$ScanDev" ]
+	if [ -z "$ScanTuner" ]
 	then
-	echo ""
-	echo "Sorry, all tuners are in use right now. Try again later."
-	echo ""
-	exit
+		for Unit in $Devices
+		do
+			for Tuner in 0 1
+				do 
+				if [ $($HDHRConfig $Unit get /tuner$Tuner/lockkey) = "none" ]
+				then
+				ScanDev=$Unit
+				ScanTuner=$Tuner
+				break
+				fi
+				done
+			if [ -n "$ScanDev" ]
+			then
+			break
+			fi 
+		done
+
+		if [ -z "$ScanDev" ]
+		then
+		echo ""
+		echo "Sorry, all tuners are in use right now. Try again later."
+		echo ""
+		exit
+		fi
+	else
+	ScanDev=$Devices
 	fi
 }
 
@@ -245,39 +212,20 @@ CSVOutput () {
 }
 
 FinalOutput () {
-# FinalOutput : Output in CSV, save to a log file
-# or use the standard output method
-
-	case "$Arg3" in
-		-datalog)
-			LogOutput
-			exit
-	esac
-
-	case "$Arg1" in
-		-datalog)
-			LogOutput
-			exit
-	;;
-		-csv)
-			CSVOutput
-			exit 
-	;;
-		*)
-			StdOutput
-	esac
+if [ -n "$LogOutput" ]
+then
+LogOutput
+elif [ -n "$CSV" ]
+then
+CSVOutput
+else
+StdOutput
+fi
 }
-
-# Declare some global variables
-Arg0=$0
-Arg1=$1
-Arg2=$2
-Arg3=$3
-Arg4=$4
 
 # Calls the above functions in the correct order 
 DetectOS
-CheckOptions
+CheckOpts "$@"
 DiscoverDevices
 CheckTunerLockStatus
 GetScanData
