@@ -3,11 +3,11 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2015.04.06.r1
+# v2015.04.06.r3
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
-# Use the -help option for additional runtime options
+# Use the -h option for additional runtime options
 #
 # A note about deciphering the results here:
 # http://www.silicondust.com/forum2/viewtopic.php?t=4474
@@ -24,39 +24,36 @@ HDHRConfig=""
 ###############################################
 
 DetectOS () {
-MACOS="/usr/bin/hdhomerun_config"
-LINUX="/usr/local/bin/hdhomerun_config"
+if [ -z "$HDHRConfig" ]
+then
+case "$OSTYPE" in
+darwin*)
+HDHRConfig="/usr/bin/hdhomerun_config"
+;;
+linux*)
+HDHRConfig="/usr/local/bin/hdhomerun_config"
+;;
+esac
+fi
 
-if [ -x "$MACOS" ]
-	then
-	HDHRConfig="$MACOS"
-	elif [ -x "$LINUX" ]
-	then
-	HDHRConfig="$LINUX"
-	elif [ ! -x "$HDHRConfig" ]
-	then
-	echo ""
-	echo "Unable to locate the hdhomerun_config utility, please edit the HDHRConfig variable in this script"
-	echo ""
-	echo "If it's not installed, download it from here: http://www.silicondust.com/support/hdhomerun/downloads"
-	echo ""
-	exit
+if [ ! -x "$HDHRConfig" ]
+then
+echo -e "\nUnable to locate the hdhomerun_config utility, please edit the HDHRConfig variable in this script"
+echo -e "\nIf it's not installed, download it from here: http://www.silicondust.com/support/hdhomerun/downloads\n"
+exit
 fi
 }
 
 DisplayHelp () {
-	echo ""
-	echo "Usage: $(basename $0) [option]"
-	echo ""
-	echo "Options are:"
-	echo ""
-	echo "-d <device id> (Provide a device ID instead of using auto discovery)"
-	echo "-t <tuner id> (Provide a tuner ID instead of using auto discovery)"
-	echo "-c Output scan results in CSV format"
-	echo "-l <filename> Log the output to <filename>"
-	echo "-n Report only what device and tuner would be used without running a scan"
-	echo "-h This help info"
-	echo ""
+	echo -e "\nUsage: $(basename $0) [option]"
+	echo -e "\nOptions are:\n"
+	echo "-d <device id>	// Provide a device ID instead of using auto discovery"
+	echo "-t <tuner id>	// Provide a tuner ID instead of using auto discovery"
+	echo "-c 		// Output scan results in CSV format"
+	echo "-l <filename>	// Log the output to <filename>"
+	echo "-b 		// Brief mode. No dB info or secondary channels"
+	echo "-n 		// Do not scan, only report devices and tuners available"
+	echo -e "-h 		// This help info\n"
 	exit
 }
 
@@ -72,20 +69,25 @@ ReportLockStatus () {
 	done
 }
 
-CheckOpts () {
-local OPTIND
-while getopts ":hnd:t:l:c" OPTIONS
-do
-	case "$OPTIONS" in
-	h) DisplayHelp exit ;;
-	n)
+NoScan () {
 	DiscoverDevices
 	CheckTunerLockStatus
 	ReportLockStatus
-	echo ""
-	echo "Selecting Device $ScanDev Tuner $ScanTuner"
-	echo ""
+	echo -e "\nSelecting Device $ScanDev Tuner $ScanTuner\n"
 	exit
+}
+
+
+CheckOpts () {
+local OPTIND
+while getopts ":hnd:t:l:cb" OPTIONS
+do
+	case "$OPTIONS" in
+	h) 
+	DisplayHelp 
+	;;
+	n)
+	NoScan
 	;;
 	d)
 	Devices=$OPTARG
@@ -97,6 +99,12 @@ do
 	;;
 	t) 
 	ScanTuner=$OPTARG 
+	if [ "$ScanTuner" -ge "2" ]
+	then
+	echo ""
+	echo "Tuner ID must be 0 or 1"
+	DisplayHelp
+	fi
 	;;
 	l)
 	DataLog=$OPTARG
@@ -104,10 +112,13 @@ do
 	c)
 	CSV="y"
 	;;
+	b)
+	BRIEF="y"
+	;;
 	:)
-	echo "Option -$OPTARG requires an argument." >&2
+	echo ""
+	echo "Option -$OPTARG requires an argument."
 	DisplayHelp
-	exit 1
 	;;
 	esac
 done
@@ -119,7 +130,6 @@ NoDevID () {
 
 DiscoverDevices () {
 # Attempt to discover HDHR devices on the LAN
-#
 	if [ -z "$Devices" ]
 	then
 	Devices=$($HDHRConfig discover | sort -nr | awk '/^hdhomerun device/ {print $3}')
@@ -127,7 +137,6 @@ DiscoverDevices () {
 
 
 # Exit if no device are found
-#
 	if [ "$Devices" = "found" ]
 	then
 	echo "No HDHomeRun units detected, exiting"
@@ -136,11 +145,15 @@ DiscoverDevices () {
 }
 
 CheckTunerLockStatus () {
-	if [ -z "$ScanTuner" ]
-	then
 		for Unit in $Devices
 		do
-			for Tuner in 0 1
+			if [ -n "$ScanTuner" ]
+			then
+			TryTuners=$ScanTuner
+			else
+			TryTuners="0 1"
+			fi
+			for Tuner in $TryTuners
 				do 
 				if [ $($HDHRConfig $Unit get /tuner$Tuner/lockkey) = "none" ]
 				then
@@ -162,14 +175,11 @@ CheckTunerLockStatus () {
 		echo ""
 		exit
 		fi
-	else
-	ScanDev=$Devices
-	fi
 }
 
 GetScanData () {
 # GetScanData : Run a scan, parse the output and
-# store the results in $ScanTuner
+# store the results in $ScanResults
 
 	echo ""
 	echo "Beginning scan on $ScanDev, tuner $ScanTuner at $(date '+%D %T')"
@@ -180,7 +190,6 @@ GetScanData () {
 	| grep "seq 100" )
 
 	NumChannels=$(wc -l <<< "$ScanResults")
-#echo "${NumChannels// }" channels found
 	echo "$NumChannels channels found"
 }
 
@@ -189,35 +198,56 @@ LogOutput () {
 # append it to $DataLog
 
 	timestamp=$(date "+%Y-%m-%d %H:%M")
-	awk -v ts="$timestamp" '{OFS="," ; print ts,$3,$7,($7 * 60 / 100 -60),($7 * 60 / 100 -60 -48.75),$9,$11,$16,$17}' \
+	awk -v ts="$timestamp" '{OFS="," ; print ts,$3,$7 \
+	,($7 * 60 / 100 -60) \
+	,($7 * 60 / 100 -60 -48.75) \
+	,$9,$11,$16,$17}' \
 	<<< "$ScanResults" \
 	| sort -n >> $DataLog
+}
+
+BriefOutput () {
+	echo -e "RF\tStrngth\tQuality\tSymbol\tVirt #\tName"
+	printf '%.0s-' {1..49}; echo
+	awk -v OFS='\t' '{print $3,$7,$9,$11,$16,$17}' \
+	<<< "$ScanResults" \
+	| sort -n
 }
 
 StdOutput () {
 # StdOutput : This is the standard output when no options are used
 
-	echo -e 'RF\tStrngth\tdBmV\tdBm\tQuality\tSymbol\tVirt#1\tName\t\tVirt#2\tName\t\tVirt#3\tName\t\tVirt#4\tName\t\tVirt#5\tName'
+	echo -e "RF\tStrngth\tdBmV\tdBm\tQuality\tSymbol\tVirt#1\tName \
+	\tVirt#2\tName\t\tVirt#3\tName\t\tVirt#4\tName\t\tVirt#5\tName"
 	printf '%.0s-' {1..72}; echo
-	awk -v OFS='\t' '{print $3,$7,($7 * 60 / 100 - 60),($7 * 60 / 100 -60 -48.75),$9,$11,$16,$17,"\t"$20,$21,"\t"$24,$25,"\t"$28,$29,"\t"$32,$33,"\t"$36,$37}' \
+	awk -v OFS='\t' '{print $3,$7 \
+	,($7 * 60 / 100 - 60) \
+	,($7 * 60 / 100 -60 -48.75) \
+	,$9,$11,$16,$17,"\t"$20,$21,"\t"$24,$25,"\t"$28,$29,"\t"$32,$33,"\t"$36,$37}' \
 	<<< "$ScanResults" \
 	| sort -n
 }
 
 CSVOutput () {
 # CSVOutput : Same as standard output, but in CSV format
-	awk -v OFS=',' '{print $3,$7,($7 * 60 / 100 - 60),($7 * 60 / 100 -60 -48.75),$9,$11,$16,$17,"\t"$20,$21,"\t"$24,$25,"\t"$28,$29,"\t"$32,$33,"\t"$36,$37}' \
+	awk -v OFS=',' '{print $3,$7 \
+	,($7 * 60 / 100 - 60) \
+	,($7 * 60 / 100 -60 -48.75) \
+	,$9,$11,$16,$17,"\t"$20,$21,"\t"$24,$25,"\t"$28,$29,"\t"$32,$33,"\t"$36,$37}' \
 	<<< "$ScanResults" \
 	| sort -n
 }
 
 FinalOutput () {
-if [ -n "$LogOutput" ]
+if [ -n "$DataLog" ]
 then
 LogOutput
 elif [ -n "$CSV" ]
 then
 CSVOutput
+elif [ -n "$BRIEF" ]
+then
+BriefOutput
 else
 StdOutput
 fi
