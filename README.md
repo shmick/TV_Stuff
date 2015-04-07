@@ -26,7 +26,7 @@ RF		Strngth	dBmV	dBm			Quality	Symbol	Virt#1	Name 		Virt#2	Name		Virt#3	Name		Vi
 23		73		-16.2	-64.95		56		100		51.1	ION			51.2	qubo		51.3	IONLife		51.4	Shop		51.5	QVC		51.6	HSN
 25		100		0		-48.75		100		100		25.1	CBLFTDT															
 32		100		0		-48.75		100		100		23.1	WNLO-HD		23.2	Bounce												
-33		100		0		-48.75		85		100		2.1		WGRZ-HD		2.2		WGRZ2.2		2.3	WGRZ2.3									
+33		100		0		-48.75		85		100		2.1		WGRZ-HD		2.2		WGRZ2.2		2.3		WGRZ2.3									
 36		100		0		-48.75		78		100		36.1	CITS-HD															
 38		100		0		-48.75		100		100		7.1		WKBW-HD															
 39		100		0		-48.75		98		100		4.1		WIVB-HD															
