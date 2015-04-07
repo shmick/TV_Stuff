@@ -16,7 +16,7 @@ $ ./channel_scan.sh
 Beginning scan on 87654321, tuner 0 at 12/31/13 09:00:00
 
 18 channels found
-RF		Strngth	dBmV	dBm	Quality	Symbol		Virt#1	Name 		Virt#2	Name		Virt#3	Name		Virt#4	Name		Virt#5	Name
+RF		Strngth	dBmV	dBm		Quality	Symbol		Virt#1	Name 		Virt#2	Name		Virt#3	Name		Virt#4	Name		Virt#5	Name
 ------------------------------------------------------------------------
 9		100		0		-48.75		98		100		9.1		CFTO															
 14		93		-4.2	-52.95		90		100		29.1	WUTV-HD		29.2	TCN		29.3	GritTV									
