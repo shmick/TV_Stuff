@@ -101,8 +101,7 @@ do
 	ScanTuner=$OPTARG 
 	if [ "$ScanTuner" -ge "2" ]
 	then
-	echo ""
-	echo "Tuner ID must be 0 or 1"
+	echo -e "\nTuner ID must be 0 or 1"
 	DisplayHelp
 	fi
 	;;
@@ -116,8 +115,7 @@ do
 	BRIEF="y"
 	;;
 	:)
-	echo ""
-	echo "Option -$OPTARG requires an argument."
+	echo -e "\nOption -$OPTARG requires an argument."
 	DisplayHelp
 	;;
 	esac
@@ -170,9 +168,7 @@ CheckTunerLockStatus () {
 
 		if [ -z "$ScanDev" ]
 		then
-		echo ""
-		echo "Sorry, all tuners are in use right now. Try again later."
-		echo ""
+		echo -e "\nSorry, all tuners are in use right now. Try again later.\n"
 		exit
 		fi
 }
@@ -181,9 +177,7 @@ GetScanData () {
 # GetScanData : Run a scan, parse the output and
 # store the results in $ScanResults
 
-	echo ""
-	echo "Beginning scan on $ScanDev, tuner $ScanTuner at $(date '+%D %T')"
-	echo ""
+	echo -e "\nBeginning scan on $ScanDev, tuner $ScanTuner at $(date '+%D %T')\n"
 	ScanResults=$($HDHRConfig $ScanDev scan $ScanTuner \
 	| tr -s "\n()=:" " " \
 	| sed 's/SCANNING/\'$'\n/g' \
