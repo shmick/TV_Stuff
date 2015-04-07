@@ -19,11 +19,11 @@ Beginning scan on 87654321, tuner 0 at 12/31/13 09:00:00
 RF		Strngth	dBmV	dBm	Quality	Symbol		Virt#1	Name 		Virt#2	Name		Virt#3	Name		Virt#4	Name		Virt#5	Name
 ------------------------------------------------------------------------
 9		100		0		-48.75		98		100		9.1		CFTO															
-14		93		-4.2		-52.95		90		100		29.1		WUTV-HD		29.2	TCN		29.3	GritTV									
-15		83		-10.2		-58.95		46		100		11.1		CHCH-DT															
+14		93		-4.2	-52.95		90		100		29.1		WUTV-HD		29.2	TCN		29.3	GritTV									
+15		83		-10.2	-58.95		46		100		11.1		CHCH-DT															
 19		100		0		-48.75		85		100		19.1		TVO															
 20		100		0		-48.75		85		100		5.1		CBLT-DT															
-23		73		-16.2		-64.95		56		100		51.1		ION		51.2	qubo		51.3	IONLife		51.4	Shop		51.5	QVC		51.6	HSN
+23		73		-16.2	-64.95		56		100		51.1		ION		51.2	qubo		51.3	IONLife		51.4	Shop		51.5	QVC		51.6	HSN
 25		100		0		-48.75		100		100		25.1		CBLFTDT															
 32		100		0		-48.75		100		100		23.1		WNLO-HD		23.2	Bounce												
 33		100		0		-48.75		85		100		2.1		WGRZ-HD		2.2	WGRZ2.2		2.3	WGRZ2.3									
