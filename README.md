@@ -19,7 +19,7 @@ Beginning scan on 87654321, tuner 0 at 12/31/13 09:00:00
 RF		Strngth	dBmV	dBm			Quality	Symbol	Virt#1	Name 		Virt#2	Name		Virt#3	Name		Virt#4	Name		Virt#5	Name
 ------------------------------------------------------------------------
 9		100		0		-48.75		98		100		9.1		CFTO															
-14		93		-4.2	-52.95		90		100		29.1	WUTV-HD		29.2	TCN		29.3	GritTV									
+14		93		-4.2	-52.95		90		100		29.1	WUTV-HD		29.2	TCN			29.3	GritTV									
 15		83		-10.2	-58.95		46		100		11.1	CHCH-DT															
 19		100		0		-48.75		85		100		19.1	TVO															
 20		100		0		-48.75		85		100		5.1		CBLT-DT															
