@@ -4,7 +4,7 @@ Scripts and other misc data for my TV setup.
 
 [channel_scan.sh](channel_scan.sh) - A utility to scan for ATSC channels on HDHomeRun ATSC devices ie: HDHR3 / HDHDR Dual / HDHR Plus/Extend
 
-###### Useage: 'channel_scan.sh -h' will display available options
+###### Usage: 'channel_scan.sh -h' will display available options
 
 If no options are given, a full channel scan will be performed on the first available tuner found.
 
