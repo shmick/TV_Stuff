@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2015.04.08.r1
+# v2015.04.08.r2
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
