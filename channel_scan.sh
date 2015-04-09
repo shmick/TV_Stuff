@@ -53,6 +53,7 @@ DisplayHelp () {
 	echo "-l <filename>	// Log the output to <filename>"
 	echo "-b 		// Brief mode. No dB info or secondary channels"
 	echo "-D 		// Debug mode. To extrapolate SS values > 100%"
+	echo "-A 		// Debug mode. To extrapolate SS values > 100% on all channels"
 	echo "-n 		// Do not scan, only report devices and tuners available"
 	echo -e "-h 		// This help info\n"
 	exit
@@ -81,7 +82,7 @@ NoScan () {
 
 CheckOpts () {
 local OPTIND
-while getopts ":hnd:t:l:cbD" OPTIONS
+while getopts ":hnd:t:l:cbDA" OPTIONS
 do
 	case "$OPTIONS" in
 	h) 
@@ -117,6 +118,11 @@ do
 	;;
 	D)
 	DEBUG="y"
+	OUTFILTER="seq 100"
+	;;
+	A)
+	DEBUG="y"
+	OUTFILTER="."
 	;;
 	:)
 	echo -e "\nOption -$OPTARG requires an argument."
@@ -206,7 +212,7 @@ GetDebugData () {
                 RESULTS=$($HDHRConfig $ScanDev get /tuner$ScanTuner/debug \
                 | tr -s "\n()=:" " " \
                 | sed 's/none/none none/g; s/\// /g' \
-                | grep "seq 100" \
+                | grep "$OUTFILTER" \
                 | grep "tun" )
                 echo $RESULTS
 		done )
