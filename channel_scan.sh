@@ -185,7 +185,7 @@ GetScanData () {
 	ScanResults=$($HDHRConfig $ScanDev scan $ScanTuner \
 	| tr -s "\n()=:" " " \
 	| sed 's/SCANNING/\'$'\n/g' \
-	| grep "seq 100" )
+	| grep "seq 100" ) 
 
 	NumChannels=$(wc -l <<< "$ScanResults")
 	echo "$NumChannels channels found"
@@ -199,20 +199,18 @@ GetDebugData () {
 # store the results in $ScanResults
 
 	echo -e "\nBeginning scan on $ScanDev, tuner $ScanTuner at $(date '+%D %T')\n"
-	#ScanResults=$(./test.sh $HDHRConfig $ScanDev $ScanTuner)
-
-	ScanResults=$(CHANNEL=2
-         while [ $CHANNEL -lt 52 ]; do
+	ScanResults=$(for CHANNEL in {2..51}
+		do \
                 $HDHRConfig $ScanDev set /tuner$ScanTuner/channel auto:$CHANNEL 
                 sleep 1
                 RESULTS=$($HDHRConfig $ScanDev get /tuner$ScanTuner/debug \
                 | tr -s "\n()=:" " " \
                 | sed 's/none/none none/g; s/\// /g' \
-                | grep "tun")
+                | grep "seq 100" \
+                | grep "tun" )
                 echo $RESULTS
-                let CHANNEL=$CHANNEL+1
-         done)
-
+		done )
+	ScanResults=$(echo "$ScanResults" | grep ^tun)
 	NumChannels=$(wc -l <<< "$ScanResults")
 	echo "$NumChannels channels found"
 
