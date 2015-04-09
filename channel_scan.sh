@@ -118,10 +118,12 @@ do
 	;;
 	D)
 	DEBUG="y"
+	LOCKKEY="12121212"
 	OUTFILTER="seq 100"
 	;;
 	A)
 	DEBUG="y"
+	LOCKKEY="12121212"
 	OUTFILTER="."
 	;;
 	:)
@@ -205,10 +207,12 @@ GetDebugData () {
 # store the results in $ScanResults
 
 	echo -e "\nBeginning scan on $ScanDev, tuner $ScanTuner at $(date '+%D %T')\n"
+	echo -e "Locking $ScanDev, tuner $ScanTuner with key $LOCKKEY\n"
+        $HDHRConfig $ScanDev set /tuner$ScanTuner/lockkey $LOCKKEY
 	ScanResults=$(for CHANNEL in {2..51}
-		do \
-                $HDHRConfig $ScanDev set /tuner$ScanTuner/channel auto:$CHANNEL 
-                sleep 1
+		do
+                $HDHRConfig $ScanDev key $LOCKKEY set /tuner$ScanTuner/channel auto:$CHANNEL 
+		sleep 1
                 RESULTS=$($HDHRConfig $ScanDev get /tuner$ScanTuner/debug \
                 | tr -s "\n()=:" " " \
                 | sed 's/none/none none/g; s/\// /g' \
@@ -216,7 +220,12 @@ GetDebugData () {
                 | grep "tun" )
                 echo $RESULTS
 		done )
-	ScanResults=$(echo "$ScanResults" | grep ^tun)
+		echo -e "Unocking $ScanDev, tuner $ScanTuner with key $LOCKKEY\n"
+        	$HDHRConfig $ScanDev key $LOCKKEY set /tuner$ScanTuner/lockkey none
+		if [ "$OUTFILTER" != "." ]
+		then
+		ScanResults=$(echo "$ScanResults" | grep ^tun)
+		fi
 	NumChannels=$(wc -l <<< "$ScanResults")
 	echo "$NumChannels channels found"
 
