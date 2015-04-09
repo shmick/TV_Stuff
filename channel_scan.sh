@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2015.04.06.r3
+# v2015.04.08.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -52,6 +52,7 @@ DisplayHelp () {
 	echo "-c 		// Output scan results in CSV format"
 	echo "-l <filename>	// Log the output to <filename>"
 	echo "-b 		// Brief mode. No dB info or secondary channels"
+	echo "-D 		// Debug mode. To extrapolate SS values > 100%"
 	echo "-n 		// Do not scan, only report devices and tuners available"
 	echo -e "-h 		// This help info\n"
 	exit
@@ -80,7 +81,7 @@ NoScan () {
 
 CheckOpts () {
 local OPTIND
-while getopts ":hnd:t:l:cb" OPTIONS
+while getopts ":hnd:t:l:cbD" OPTIONS
 do
 	case "$OPTIONS" in
 	h) 
@@ -113,6 +114,9 @@ do
 	;;
 	b)
 	BRIEF="y"
+	;;
+	D)
+	DEBUG="y"
 	;;
 	:)
 	echo -e "\nOption -$OPTARG requires an argument."
@@ -187,6 +191,33 @@ GetScanData () {
 	echo "$NumChannels channels found"
 }
 
+GetDebugData () {
+# GetDebugData : Tune each channel, and grab stats using debug mode so we can extrapolate strong signals above SS = 100%, parse the output and
+# plotting 'dbg = xxx' (X axis)  vs SS, dBmV (Y axis) in excel within the usable 0-100 SS range yields a linear relationship
+# My tuner (HDHR3-US) worked out to having a slope = 0.139874758, round to .14. and an intercept = 58.7553810994, round to 58.8
+
+# store the results in $ScanResults
+
+	echo -e "\nBeginning scan on $ScanDev, tuner $ScanTuner at $(date '+%D %T')\n"
+	#ScanResults=$(./test.sh $HDHRConfig $ScanDev $ScanTuner)
+
+	ScanResults=$(CHANNEL=2
+         while [ $CHANNEL -lt 52 ]; do
+                $HDHRConfig $ScanDev set /tuner$ScanTuner/channel auto:$CHANNEL 
+                sleep 1
+                RESULTS=$($HDHRConfig $ScanDev get /tuner$ScanTuner/debug \
+                | tr -s "\n()=:" " " \
+                | sed 's/none/none none/g; s/\// /g' \
+                | grep "tun")
+                echo $RESULTS
+                let CHANNEL=$CHANNEL+1
+         done)
+
+	NumChannels=$(wc -l <<< "$ScanResults")
+	echo "$NumChannels channels found"
+
+}
+
 LogOutput () {
 # LogOutput : Re-parse the $ScanResults data and
 # append it to $DataLog
@@ -232,8 +263,35 @@ CSVOutput () {
 	| sort -n
 }
 
+DebugOutput () {
+# DebugOutput : Used when selecting debug mode
+
+        echo -e "RF\tStrngth\tdBmV\tdBm\tQuality\tSNR\tSymbol\tdbg\tCalc_dBmV\tCalc_dBm"
+        printf '%.0s-' {1..92}; echo
+        awk -v OFS='\t' '{print $4,$9 \
+        ,($9 * 60 / 100 - 60) \
+        ,($9 * 60 / 100 -60 -48.75) \
+        ,$11,($11 / 100 * 33),$13,$15,(.14 * $15 + 58.8),"\t"(.14 * $15 + 58.8 - 48.75)}' \
+        <<< "$ScanResults" \
+        | sort -n
+}
+
+
+ScanType () {
+if [ -n "$DEBUG" ]
+then
+echo "debug mode"
+GetDebugData
+else
+GetScanData
+fi
+}
+
 FinalOutput () {
-if [ -n "$DataLog" ]
+if [ -n "$DEBUG" ]
+then
+DebugOutput
+elif [ -n "$DataLog" ]
 then
 LogOutput
 elif [ -n "$CSV" ]
@@ -252,5 +310,5 @@ DetectOS
 CheckOpts "$@"
 DiscoverDevices
 CheckTunerLockStatus
-GetScanData
+ScanType
 FinalOutput
