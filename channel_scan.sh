@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2015.04.08.r2
+# v2015.04.11.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -214,10 +214,10 @@ GetDebugData () {
                 $HDHRConfig $ScanDev key $LOCKKEY set /tuner$ScanTuner/channel auto:$CHANNEL 
 		sleep 1
                 RESULTS=$($HDHRConfig $ScanDev get /tuner$ScanTuner/debug \
-                | tr -s "\n()=:" " " \
-                | sed 's/none/none none/g; s/\// /g' \
-                | grep "$OUTFILTER" \
-                | grep "tun" )
+                | grep "tun" \
+                | tr "/()=:" " " \
+                | sed 's/none/none none/g' \
+                | grep "$OUTFILTER" )
                 echo $RESULTS
 		done )
 		echo -e "Unocking $ScanDev, tuner $ScanTuner with key $LOCKKEY\n"
@@ -281,14 +281,25 @@ DebugOutput () {
 
         echo -e "RF\tStrngth\tdBmV\tdBm\tQuality\tSNR\tSymbol\tdbg\tCalc_dBmV\tCalc_dBm"
         printf '%.0s-' {1..92}; echo
-        awk -v OFS='\t' '{print $4,$9 \
-        ,($9 * 60 / 100 - 60) \
-        ,($9 * 60 / 100 -60 -48.75) \
-        ,$11,($11 / 100 * 33),$13,$15,(.14 * $15 + 58.8),"\t"(.14 * $15 + 58.8 - 48.75)}' \
+        awk -v OFS='\t' \
+	'{ \
+	if (length($15) < 5) \
+	{ printf "%u\t%u\t%3.1f\t%3.1f\t%u\t%2.1f\t%u\t%s\t%2.1f\t\t%2.1f\n", $4,$9 \
+	,($9 * 60 / 100 - 60) \
+	,($9 * 60 / 100 -60 -48.75) \
+	,$11,($11 / 100 * 33),$13,$15,(.14 * $15 + 58.8),"\t"(.14 * $15 + 58.8 - 48.75) } \
+	else
+	{ printf "%u\t%u\t%3.1f\t%3.1f\t%u\t%2.1f\t%u\t%s\t%2.1f\t\t%2.1f\n", $4,$9 \
+	,($9 * 60 / 100 - 60) \
+	,($9 * 60 / 100 -60 -48.75) \
+	,$11,($11 / 100 * 33),$13,$15,(.00991 * $15 + 45.3),"\t"(.00991 * $15 + 45.3 - 48.75) } \
+	}' \
         <<< "$ScanResults" \
         | sort -n
 }
 
+#,(.14 * $15/10 + 58.8),"\t"(.14 * $15/10 + 58.8 - 48.75 )}' \
+#,(0.00991 * $15 + 45.3),"\t"(.00991 * $15 + 45.3 - 48.75 )}' \
 
 ScanType () {
 if [ -n "$DEBUG" ]
