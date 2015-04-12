@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2015.04.11.r1
+# v2015.04.11.r2
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -47,8 +47,8 @@ fi
 DisplayHelp () {
 	echo -e "\nUsage: $(basename $0) [option]"
 	echo -e "\nOptions are:\n"
-	echo "-d <device id>	// Provide a device ID instead of using auto discovery"
-	echo "-t <tuner id>	// Provide a tuner ID instead of using auto discovery"
+	echo "-d <device>	// Provide a device ID instead of using auto discovery"
+	echo "-t <tuner>	// Provide a tuner ID instead of using auto discovery"
 	echo "-c 		// Output scan results in CSV format"
 	echo "-l <filename>	// Log the output to <filename>"
 	echo "-b 		// Brief mode. No dB info or secondary channels"
@@ -64,10 +64,10 @@ ReportLockStatus () {
 	for Unit in $Devices
 	do
 	for Tuner in 0 1
-	do 
-	echo -n "Lock status for Device $Unit Tuner $Tuner: "
-	echo "$($HDHRConfig $Unit get /tuner$Tuner/lockkey)"
-	done
+		do 
+		echo -n "Lock status for Device $Unit Tuner $Tuner: "
+		echo "$($HDHRConfig $Unit get /tuner$Tuner/lockkey)"
+		done
 	done
 }
 
@@ -140,6 +140,8 @@ NoDevID () {
 
 DiscoverDevices () {
 # Attempt to discover HDHR devices on the LAN
+# Not used if you specify a device ID with the -d flag
+
 	if [ -z "$Devices" ]
 	then
 	Devices=$($HDHRConfig discover | sort -nr | awk '/^hdhomerun device/ {print $3}')
@@ -158,6 +160,9 @@ CheckTunerLockStatus () {
 		for Unit in $Devices
 		do
 			if [ -n "$ScanTuner" ]
+			# If a tuner was specified on the command line
+			# with the -t option, use that, otherwise try
+			# tuner 0 and 1
 			then
 			TryTuners=$ScanTuner
 			else
@@ -200,11 +205,11 @@ GetScanData () {
 }
 
 GetDebugData () {
-# GetDebugData : Tune each channel, and grab stats using debug mode so we can extrapolate strong signals above SS = 100%, parse the output and
-# plotting 'dbg = xxx' (X axis)  vs SS, dBmV (Y axis) in excel within the usable 0-100 SS range yields a linear relationship
+# GetDebugData : Tune each channel, and grab stats using debug mode so we can extrapolate strong signals above SS = 100%
+# parse the output and plotting 'dbg = xxx' (X axis)  vs SS, dBmV (Y axis) in excel within the usable 0-100 SS range 
+# yields a linear relationship
 # My tuner (HDHR3-US) worked out to having a slope = 0.139874758, round to .14. and an intercept = 58.7553810994, round to 58.8
-
-# store the results in $ScanResults
+# HDHR4 looks to be: slope = .00991, intercept = 45.3
 
 	echo -e "\nBeginning scan on $ScanDev, tuner $ScanTuner at $(date '+%D %T')\n"
 	echo -e "Locking $ScanDev, tuner $ScanTuner with key $LOCKKEY\n"
@@ -228,7 +233,6 @@ GetDebugData () {
 		fi
 	NumChannels=$(wc -l <<< "$ScanResults")
 	echo "$NumChannels channels found"
-
 }
 
 LogOutput () {
@@ -245,6 +249,8 @@ LogOutput () {
 }
 
 BriefOutput () {
+# No dBmV, dBm or secondary channel info
+
 	echo -e "RF\tStrngth\tQuality\tSymbol\tVirt #\tName"
 	printf '%.0s-' {1..49}; echo
 	awk -v OFS='\t' '{print $3,$7,$9,$11,$16,$17}' \
@@ -268,6 +274,7 @@ StdOutput () {
 
 CSVOutput () {
 # CSVOutput : Same as standard output, but in CSV format
+
 	awk -v OFS=',' '{print $3,$7 \
 	,($7 * 60 / 100 - 60) \
 	,($7 * 60 / 100 -60 -48.75) \
@@ -278,6 +285,9 @@ CSVOutput () {
 
 DebugOutput () {
 # DebugOutput : Used when selecting debug mode
+# If the dbg= value is less than 5 characters, it uses the calc .14 * $15 + 58.8
+# If the dbg= value is 5 characters, it's a newer HDHR4 or HDTC unit and uses
+# the calc .00991 * $15 + 45.3
 
         echo -e "RF\tStrngth\tdBmV\tdBm\tQuality\tSNR\tSymbol\tdbg\tCalc_dBmV\tCalc_dBm"
         printf '%.0s-' {1..92}; echo
@@ -297,9 +307,6 @@ DebugOutput () {
         <<< "$ScanResults" \
         | sort -n
 }
-
-#,(.14 * $15/10 + 58.8),"\t"(.14 * $15/10 + 58.8 - 48.75 )}' \
-#,(0.00991 * $15 + 45.3),"\t"(.00991 * $15 + 45.3 - 48.75 )}' \
 
 ScanType () {
 if [ -n "$DEBUG" ]
