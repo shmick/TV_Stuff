@@ -3,7 +3,7 @@
 ######################################################################################
 #
 # channel_scan.sh 
-# v2015.04.11.r2
+# v2017.02.22.r1
 #
 # This script will scan a HDHomeRun for ATSC channels and print a formatted list
 #
@@ -28,10 +28,10 @@ if [ -z "$HDHRConfig" ]
 then
 case "$OSTYPE" in
 darwin*)
-HDHRConfig="/usr/bin/hdhomerun_config"
+HDHRConfig="$(which hdhomerun_config)"
 ;;
 linux*)
-HDHRConfig="/usr/local/bin/hdhomerun_config"
+HDHRConfig="$(which hdhomerun_config)"
 ;;
 esac
 fi
