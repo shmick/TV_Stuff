@@ -13,7 +13,7 @@
 # http://www.silicondust.com/forum2/viewtopic.php?t=4474
 #
 # Twitter:// @shmick
-# BitCoin:// 1C9hsdrbBVjGcgiMT1yB5Rjda2xPLka9GS
+# BitCoin:// 1BFSzGSSU5LazfYv8rYYxzT3M3GRf9EPov
 ######################################################################################
 
 #Specify the full path to your hdhomerun_config binary if it's not found
