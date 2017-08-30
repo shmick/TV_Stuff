@@ -56,3 +56,4 @@ Other software and hardware in use
 Licensing: This is distributed unider the Creative Commons 3.0 Non-commecrial, Attribution, Share-Alike license. You can use the code for noncommercial purposes. You may NOT sell it. If you do use it, then you must make an attribution to me (i.e. Include my name and thank me for the hours I spent on this)
 
 
+Tip Jar: BTC 1BFSzGSSU5LazfYv8rYYxzT3M3GRf9EPov
