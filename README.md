@@ -45,15 +45,14 @@ RF		Strngth	dBmV	dBm			Quality	Symbol	Virt#1	Name 		Virt#2	Name		Virt#3	Name		Vi
 Other software and hardware in use
 -----------------------------------
 
-* [Apple Mac Mini](http://www.apple.com/ca/mac-mini/)
+* [Apple Mac Mini](https://www.apple.com/ca/mac-mini/)
 
-* [Elgato EyeTV](http://www.elgato.com/eyetv/eyetv-3)
+* [Plex](https://www.plex.tv/)
 
-* [Remote Buddy](http://www.iospirit.com/products/remotebuddy/)
+* [Remote Buddy](https://www.iospirit.com/products/remotebuddy/)
 
-* [Silicon Dust HDHomeRun tuners](http://www.silicondust.com/products_new/)
+* [Silicon Dust HDHomeRun tuners](https://www.silicondust.com/#)
+
+~~* [EyeTV](http://www.elgato.com/eyetv/eyetv-3)~~ (replaced with Plex as the new owners of EyeTV, Geniatech, have decided to drop support for the HDHomeRun tuners) 
 
 Licensing: This is distributed unider the Creative Commons 3.0 Non-commecrial, Attribution, Share-Alike license. You can use the code for noncommercial purposes. You may NOT sell it. If you do use it, then you must make an attribution to me (i.e. Include my name and thank me for the hours I spent on this)
-
-
-Tip Jar: BTC 1BFSzGSSU5LazfYv8rYYxzT3M3GRf9EPov
